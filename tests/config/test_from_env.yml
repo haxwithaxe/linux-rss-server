@@ -1,0 +1,16 @@
+---
+repos:
+  - url_format: 'http://test0.example.com/{{arch}}'
+    arches:
+      - amd64
+    type: debian
+    check_every:
+      unit: hour
+      multiplier: 193
+healthcheck_url: http://healthcheck.example.com
+port: 792
+rss_cache: '{rss_cache}'
+start_at: 
+  hour: 13
+  minute: 57
+file_extension: .test-extension

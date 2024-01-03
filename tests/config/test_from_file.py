@@ -1,10 +1,9 @@
-
 import pathlib
 
 import pytest
 
-from linux_rss_server.feed import Feed
 from linux_rss_server.config import Config
+from linux_rss_server.feed import Feed
 
 NO_DEFAULTS_CONFIG = '''\
 ---
@@ -13,9 +12,9 @@ repos:
     arches:
       - amd64
     type: debian
-    check_every:
-      unit: hour
-      multiplier: 193
+check_every:
+  unit: hour
+  multiplier: 193
 healthcheck_url: http://healthcheck.example.com
 port: 792
 rss_cache: '{rss_cache}'
@@ -34,18 +33,17 @@ repos:
   - url_format: 'http://test0.example.com/{{arch}}'
     type: debian
 rss_cache: '{rss_cache}'
-file_extension: .test-extension
 '''
+
 
 def test_loads_from_file_no_defaults(tmp_path: pathlib.Path):
     config_file = tmp_path.joinpath('test_server_config.yml')
     rss_cache = tmp_path.joinpath('test_server_nosuch.rss')
-    assert not rss_cache.exists(), \
-        'The RSS cache file exists something is wrong'
+    assert not rss_cache.exists(), 'The RSS cache file exists something is wrong'
     config_file.write_text(
-      NO_DEFAULTS_CONFIG.format(rss_cache=str(rss_cache.absolute()))
+        NO_DEFAULTS_CONFIG.format(rss_cache=str(rss_cache.absolute()))
     )
-    config = Config.from_file(config_file)
+    config = Config.from_file(path=config_file)
     assert config.check_every.unit == 'hour'
     assert config.check_every.multiplier == 193
     assert config.healthcheck_url == 'http://healthcheck.example.com'
@@ -63,15 +61,14 @@ def test_loads_from_file_no_defaults(tmp_path: pathlib.Path):
 def test_loads_from_file_some_defaults(tmp_path: pathlib.Path):
     config_file = tmp_path.joinpath('test_server_config.yml')
     rss_cache = tmp_path.joinpath('test_server_nosuch.rss')
-    assert not rss_cache.exists(), \
-        'The RSS cache file exists something is wrong'
+    assert not rss_cache.exists(), 'The RSS cache file exists something is wrong'
     config_file.write_text(
-      NO_DEFAULTS_CONFIG.format(rss_cache=str(rss_cache.absolute()))
+        SOME_DEFAULTS_CONFIG.format(rss_cache=str(rss_cache.absolute()))
     )
-    config = Config.from_file(config_file)
+    config = Config.from_file(path=config_file)
     assert config.check_every.unit == 'hour'
     assert config.check_every.multiplier == 1
-    assert config.healthcheck_url == 'http://healthcheck.example.com'
+    assert config.healthcheck_url is None
     assert config.port == 56427
     assert config.repos[0].url_format == 'http://test0.example.com/{arch}'
     assert config.repos[0].arches == ['amd64']

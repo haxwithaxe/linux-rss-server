@@ -5,8 +5,8 @@ from typing import Generator
 
 import bs4
 
-from . import page
 from ..config import Config
+from . import page
 
 
 def scrape(config: Config, url: str) -> Generator[str, None, None]:

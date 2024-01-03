@@ -1,7 +1,7 @@
 """Linux installer RSS feed generator."""
 
-from feedgen.feed import FeedGenerator
 import feedparser
+from feedgen.feed import FeedGenerator
 
 from . import log
 from .config import Config

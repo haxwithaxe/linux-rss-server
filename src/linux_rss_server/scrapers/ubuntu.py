@@ -6,7 +6,6 @@ from typing import Generator
 
 import bs4
 
-
 from ..config import Config
 from . import page
 

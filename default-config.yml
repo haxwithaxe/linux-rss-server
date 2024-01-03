@@ -1,0 +1,8 @@
+---
+arches:
+  - amd64
+repos:
+  - url_format: 'https://cdimage.debian.org/debian-cd/current/{arch}/bt-cd/'
+    type: debian
+  - url_format: 'https://releases.ubuntu.com'
+    type: ubuntu

@@ -1,11 +1,10 @@
 """Linux installer repo scraper runner."""
 
-from . import alpine, debian, ubuntu
+from . import debian, ubuntu
 
 _SCRAPERS = {
     'debian': debian,
     'ubuntu': ubuntu,
-    'alpine': alpine,
 }
 
 

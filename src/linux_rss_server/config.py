@@ -17,7 +17,6 @@ class RepoType(enum.StrEnum):
 
     debian = enum.auto()
     ubuntu = enum.auto()
-    alpine = enum.auto()
 
 
 @dataclass

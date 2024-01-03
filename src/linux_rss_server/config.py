@@ -111,7 +111,7 @@ class Config:
         config_path = pathlib.Path(
             env.get(
                 'LINUX_RSS_SERVER_CONFIGFILE',
-                f'/{_APP_PATH}/config.yml',
+                f'{_APP_PATH}/config.yml',
             ),
         )
         return cls.from_file(

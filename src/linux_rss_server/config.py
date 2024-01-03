@@ -130,8 +130,6 @@ class Config:
     def from_file(cls, path: pathlib.Path, **overrides) -> 'Config':
         """Load the config from a yaml file."""
         config = yaml.safe_load(path.read_text())
-        print('config', config)
-        print('overrides', overrides)
         file_extension = overrides.get('file_extension')
         if file_extension is None:
             file_extension = config.get('file_extension', cls.file_extension)

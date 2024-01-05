@@ -1,6 +1,6 @@
-import pathlib
+"""Test loading and updating an existing RSS cache."""
 
-import pytest
+import pathlib
 
 from linux_rss_server.config import Config
 from linux_rss_server.feed import Feed
@@ -40,6 +40,7 @@ MOCK_RSS_FEED = '''\
 
 
 def test_appends_to_existing_feed(tmp_path: pathlib.Path):
+    """Test appending to an existing RSS cache."""
     rss_cache = tmp_path.joinpath('feed.rss')
     rss_cache.write_text(MOCK_RSS_FEED)
     config = Config(
@@ -54,7 +55,8 @@ def test_appends_to_existing_feed(tmp_path: pathlib.Path):
     feed = Feed(config)
     feed.load()
     feed.append(
-        name='test append new name', url='http://test.example.com/test_append_new_url'
+        name='test append new name',
+        url='http://test.example.com/test_append_new_url',
     )
     feed.dump()
     assert rss_cache.exists()
@@ -62,20 +64,34 @@ def test_appends_to_existing_feed(tmp_path: pathlib.Path):
     entries = feed.feed.entry()
     assert entries[0].content()['content'] == 'test append new name'
     assert entries[0].description() == 'test append new name'
-    assert entries[0].link()[0]['href'] == 'http://test.example.com/test_append_new_url'
+    assert entries[0].link()[0]['href'] == (
+        'http://test.example.com/test_append_new_url'  # nofmt
+    )
     assert entries[0].title() == 'test append new name'
     # Existing entries
-    assert entries[3].content()['content'] == 'http://test.example.com/test_item_link_1'
+    assert entries[3].content()['content'] == (
+        'http://test.example.com/test_item_link_1'  # nofmt
+    )
     assert entries[3].description() == 'test item description 1'
-    assert entries[3].link()[0]['href'] == 'http://test.example.com/test_item_link_1'
+    assert entries[3].link()[0]['href'] == (
+        'http://test.example.com/test_item_link_1'  # nofmt
+    )
     assert entries[3].title() == 'test item title 1'
 
-    assert entries[2].content()['content'] == 'http://test.example.com/test_item_link_2'
+    assert entries[2].content()['content'] == (
+        'http://test.example.com/test_item_link_2'  # nofmt
+    )
     assert entries[2].description() == 'test item description 2'
-    assert entries[2].link()[0]['href'] == 'http://test.example.com/test_item_link_2'
+    assert entries[2].link()[0]['href'] == (
+        'http://test.example.com/test_item_link_2'  # nofmt
+    )
     assert entries[2].title() == 'test item title 2'
 
-    assert entries[1].content()['content'] == 'http://test.example.com/test_item_link_3'
+    assert entries[1].content()['content'] == (
+        'http://test.example.com/test_item_link_3'  # nofmt
+    )
     assert entries[1].description() == 'test item description 3'
-    assert entries[1].link()[0]['href'] == 'http://test.example.com/test_item_link_3'
+    assert entries[1].link()[0]['href'] == (
+        'http://test.example.com/test_item_link_3'  # nofmt
+    )
     assert entries[1].title() == 'test item title 3'

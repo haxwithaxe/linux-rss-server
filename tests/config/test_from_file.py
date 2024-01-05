@@ -1,9 +1,8 @@
+"""Test loading a config from a file."""
+
 import pathlib
 
-import pytest
-
 from linux_rss_server.config import Config
-from linux_rss_server.feed import Feed
 
 NO_DEFAULTS_CONFIG = '''\
 ---
@@ -37,9 +36,12 @@ rss_cache: '{rss_cache}'
 
 
 def test_loads_from_file_no_defaults(tmp_path: pathlib.Path):
+    """Test loading from file specifying all values."""
     config_file = tmp_path.joinpath('test_server_config.yml')
     rss_cache = tmp_path.joinpath('test_server_nosuch.rss')
-    assert not rss_cache.exists(), 'The RSS cache file exists something is wrong'
+    assert (
+        not rss_cache.exists()
+    ), 'The RSS cache file exists something is wrong'  # nofmt
     config_file.write_text(
         NO_DEFAULTS_CONFIG.format(rss_cache=str(rss_cache.absolute()))
     )
@@ -59,9 +61,12 @@ def test_loads_from_file_no_defaults(tmp_path: pathlib.Path):
 
 
 def test_loads_from_file_some_defaults(tmp_path: pathlib.Path):
+    """Test loading from file specifying some values."""
     config_file = tmp_path.joinpath('test_server_config.yml')
     rss_cache = tmp_path.joinpath('test_server_nosuch.rss')
-    assert not rss_cache.exists(), 'The RSS cache file exists something is wrong'
+    assert (
+        not rss_cache.exists()
+    ), 'The RSS cache file exists something is wrong'  # nofmt
     config_file.write_text(
         SOME_DEFAULTS_CONFIG.format(rss_cache=str(rss_cache.absolute()))
     )

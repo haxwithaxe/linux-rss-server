@@ -1,6 +1,5 @@
 import pathlib
 
-import feedparser
 import pytest
 
 from linux_rss_server.config import Config

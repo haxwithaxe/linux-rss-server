@@ -1,12 +1,13 @@
-import pathlib
+"""Tests for creating new RSS cache."""
 
-import pytest
+import pathlib
 
 from linux_rss_server.config import Config
 from linux_rss_server.feed import Feed
 
 
 def test_create_new_feed(tmp_path: pathlib.Path):
+    """Test creating a new RSS cache."""
     rss_cache = tmp_path.joinpath('feed.rss')
     config = Config(
         check_every=None,

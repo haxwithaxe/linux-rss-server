@@ -25,7 +25,7 @@ def test_loads_from_env_with_no_defaults(tmp_path: pathlib.Path):
 
     config_file.write_text(MINIMAL_CONFIG)
     env = dict(
-        CHECK_EVERY='hour',
+        CHECK_EVERY_UNIT='hour',
         CHECK_EVERY_MUL='193',
         HEALTHCHECK_URL='http://healthcheck.example.com',
         PORT='792',

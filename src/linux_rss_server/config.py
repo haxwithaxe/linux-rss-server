@@ -1,5 +1,6 @@
 """Linux RSS Server configuration."""
 
+import datetime
 import enum
 import os
 import pathlib
@@ -10,6 +11,14 @@ from typing import Iterable
 import yaml
 
 _APP_PATH = '/linux_rss_server'
+DEFAULT_CHECK_EVERY_MULTIPLIER = 1
+DEFAULT_CHECK_EVERY_UNIT = 'day'
+DEFAULT_CONFIG = f'{_APP_PATH}/config.yml'
+DEFAULT_FILE_EXTENSION = '.torrent'
+DEFAULT_PORT = 56427
+DEFAULT_RSS_CACHE = f'{_APP_PATH}/cache/rss_cache.rss'
+DEFAULT_START_AT_HOUR = 12
+DEFAULT_START_AT_MINUTE = 0
 
 
 class RepoType(enum.StrEnum):
@@ -50,6 +59,38 @@ class CheckEvery:
     unit: str
     multiplier: float
 
+    def __post_init__(self):
+        if self.unit not in ['week', 'day', 'hour', 'minute']:
+            raise ValueError(
+                f'Invalid value for `check_every.unit`: {self.unit}',
+            )
+        if self.multiplier < 0:
+            raise ValueError(
+                'Invalid value for `check_every.multiplier`: '
+                f'{self.multiplier}',  # nofmt
+            )
+        if self.timedelta < datetime.timedelta(minutes=15):
+            raise ValueError(
+                'Don\'t be an mean. Checking every %s %ss (less than 15min) '
+                'is abusive.',  # nofmt
+                self.multiplier,
+                self.unit,
+            )
+
+    @property
+    def timedelta(self) -> datetime.timedelta:
+        """The interval between checks."""
+        if self.unit == 'week':
+            return datetime.timedelta(weeks=self.multiplier)
+        if self.unit == 'day':
+            return datetime.timedelta(days=self.multiplier)
+        if self.unit == 'hour':
+            return datetime.timedelta(hours=self.multiplier)
+        if self.unit == 'minute':
+            return datetime.timedelta(minutes=self.multiplier)
+        # Just in case
+        raise ValueError(f'Invalid value for `check_every.unit`: {self.unit}')
+
 
 def _get_check_every(config: dict, overrides: dict) -> CheckEvery:
     unit = overrides.get('check_every')
@@ -66,26 +107,34 @@ def _get_check_every(config: dict, overrides: dict) -> CheckEvery:
         unit = config['check_every']
     elif config.get('check_every') is not None:
         # don't let bad configs pass even if there is an override.
-        check_every = config.get('check_every')
-        raise ValueError('Invalid value for `check_every`: {check_every}')
-    return CheckEvery(unit=unit or 'day', multiplier=int(multiplier or 1))
+        raise ValueError(
+            'Invalid value for `check_every`: {config.get("check_every")}',
+        )
+    return CheckEvery(
+        unit=unit or DEFAULT_CHECK_EVERY_UNIT,
+        multiplier=int(multiplier or DEFAULT_CHECK_EVERY_MULTIPLIER),
+    )
 
 
 def _get_start_at(config: dict, overrides: dict) -> Time:
     hour = overrides.get('start_at_hour')
     minute = overrides.get('start_at_minute')
     if hour is None:
-        hour = config.get('start_at', {}).get('hour', 12)
+        hour = config.get('start_at', {}).get('hour', DEFAULT_START_AT_HOUR)
     if minute is None:
-        minute = config.get('start_at', {}).get('minute', 0)
+        minute = config.get('start_at', {}).get(
+            'minute',
+            DEFAULT_START_AT_MINUTE,
+        )
     if isinstance(hour, str) and hour.lower() == 'random':
         hour = random.randint(0, 23)
     if isinstance(minute, str) and minute.lower() == 'random':
-        minute = random.randint(0, 60)
+        minute = random.randint(0, 59)
     return Time(
         hour=int(hour),
         minute=int(minute),
     )
+
 
 @dataclass
 class Config:
@@ -97,7 +146,7 @@ class Config:
     repos: list[Repo]
     rss_cache: pathlib.Path
     start_at: Time
-    file_extension: str = '.torrent'
+    file_extension: str = DEFAULT_FILE_EXTENSION
 
     @classmethod
     def from_env(cls, env: dict = None) -> 'Config':
@@ -110,12 +159,12 @@ class Config:
         config_path = pathlib.Path(
             env.get(
                 'LINUX_RSS_SERVER_CONFIGFILE',
-                f'{_APP_PATH}/config.yml',
+                DEFAULT_CONFIG,
             ),
         )
         return cls.from_file(
             path=config_path,
-            check_every=env.get('CHECK_EVERY'),
+            check_every=env.get('CHECK_EVERY_UNIT'),
             check_every_multiplier=env.get('CHECK_EVERY_MUL'),
             default_arches=default_arches,
             healthcheck_url=env.get('HEALTHCHECK_URL'),
@@ -138,7 +187,7 @@ class Config:
             healthcheck_url = config.get('healthcheck_url')
         port = overrides.get('port')
         if not port:
-            port = config.get('port', 56427)
+            port = config.get('port', DEFAULT_PORT)
         default_arches = overrides.get('default_arches')
         if not default_arches:
             default_arches = config.get('arches', [])
@@ -155,7 +204,7 @@ class Config:
         if not rss_cache_filename:
             rss_cache_filename = config.get(
                 'rss_cache',
-                f'{_APP_PATH}/cache/rss_cache.rss',
+                DEFAULT_RSS_CACHE,
             )
         rss_cache = pathlib.Path(rss_cache_filename)
         rss_cache.parent.mkdir(exist_ok=True)

@@ -15,7 +15,7 @@ fi
 
 echo Tagging ${SRC_IMAGE} as $TAG
 if [[ "$TAG" != *"-"* ]]; then
-	docker image tag ${SRC_IMAGE}-server:latest ${DEST_IMAGE}:latest
+	docker image tag ${SRC_IMAGE}:latest ${DEST_IMAGE}:latest
 fi
 docker image tag ${SRC_IMAGE}:latest ${DEST_IMAGE}:$TAG
 echo Pushing ${DEST_IMAGE}:latest and $TAG

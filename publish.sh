@@ -4,8 +4,8 @@
 
 set -e
 
-DEST_IMAGE_PREFIX="hub.hax.in.net/haxwithaxe/linux-rss-server"
-SRC_IMAGE_PREFIX="linux-rss-server"
+DEST_IMAGE="haxwithaxe/linux-rss-server"
+SRC_IMAGE="linux-rss-server"
 TAG=${1:-${TAG:-$(git tag --points-at HEAD)}}
 
 if [[ -z $TAG ]]; then

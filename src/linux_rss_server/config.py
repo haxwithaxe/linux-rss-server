@@ -39,8 +39,10 @@ class Repo:
     def __iter__(self) -> Iterable[str]:
         """Return an iterable of URLs based on `url_format` and `arches`."""
         urls = []
-        for arch in self.arches:
-            urls.append(self.url_format.format(arch=arch))
+        for arch in self.arches or ['noarches']:
+            url = self.url_format.format(arch=arch)
+            if url not in urls:
+                urls.append(url)
         return iter(urls)
 
 

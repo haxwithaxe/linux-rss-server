@@ -160,7 +160,7 @@ class Config:
             default_arches = [x.strip() for x in arches_str.split(',')]
         config_path = pathlib.Path(
             env.get(
-                'LINUX_RSS_SERVER_CONFIGFILE',
+                'CONFIGFILE',
                 DEFAULT_CONFIG,
             ),
         )

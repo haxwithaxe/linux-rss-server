@@ -33,7 +33,7 @@ def test_loads_from_env_with_no_defaults(tmp_path: pathlib.Path):
         START_AT_HOUR='13',
         START_AT_MINUTE='57',
         FILE_EXTENSION='.test-extension',
-        LINUX_RSS_SERVER_CONFIGFILE=str(config_file.absolute()),
+        CONFIGFILE=str(config_file.absolute()),
     )
     config = Config.from_env(env)
     assert config.check_every.unit == 'hour'
